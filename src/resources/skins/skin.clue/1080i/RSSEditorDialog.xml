@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">5002</defaultcontrol>
+	<allowoverlay>no</allowoverlay>
+
+	<controls>
+		<!--background-->
+		<include>globalBackground</include>
+		<!--date and time-->
+		<include>dateTime</include>
+
+		<!--main menu-->
+		<control type="group">
+			<posx>312</posx>
+			<posy>209</posy>
+			<!--overlay-->
+			<control type="image">
+				<posx>-312</posx>
+				<posy>118</posy>
+				<width>fullscreenWidth</width>
+				<height>390</height>
+				<texture>masks/black.png</texture>
+				<colordiffuse>88ffffff</colordiffuse>
+				<aspectratio>stretch</aspectratio>
+			</control>
+			<!--animations-->
+			<include>modalDialogInOutVertical</include>
+			<control type="image">
+				<posx>-384</posx>
+				<posy>44</posy>
+				<width>2500</width>
+				<height>1-row</height>
+				<texture>masks/selected.png</texture>
+				<colordiffuse>ffffffff</colordiffuse>
+				<aspectratio>stretch</aspectratio>
+			</control>
+			<control type="image">
+				<posx>-3</posx>
+				<posy>44</posy>
+				<width>3</width>
+				<height>1-row</height>
+				<texture>masks/black.png</texture>
+				<colordiffuse>ffffffff</colordiffuse>
+				<aspectratio>stretch</aspectratio>
+			</control>
+			<!--Dialog Title-->
+			<control type="label" id="5000">
+				<posx>12</posx>
+				<posy>44</posy>
+				<width>4-col</width>
+				<font>pageTitle</font>
+				<label>RSS Editor</label>
+				<textcolor>black</textcolor>
+				<shadowcolor>-</shadowcolor>
+			</control>
+
+			<control type="group" id="5001">
+				<posx>0</posx>
+				<posy>3-row</posy>
+				<control type="image">
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>9-col</width>
+					<height>5-row</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>masks/inactive.png</texture>
+					<colordiffuse>77FFFFFF</colordiffuse>
+				</control>
+				<control type="list" id="5110">
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>9-col</width>
+					<height>5-row</height>
+					<onright>5002</onright>
+					<pagecontrol>-</pagecontrol>
+					<scrolltime>200</scrolltime>
+					<itemlayout height="40">
+						<control type="image">
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>9-col</width>
+							<height>36</height>
+						</control>
+						<control type="label">
+							<posx>5</posx>
+							<posy>1</posy>
+							<width>643</width>
+							<height>35</height>
+							<aligny>center</aligny>
+							<align>left</align>
+							<font>itemTitleSmall</font>
+							<info>ListItem.Label</info>
+						</control>
+					</itemlayout>
+					<focusedlayout height="40">
+						<control type="image">
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>9-col</width>
+							<height>36</height>
+							<visible>!Control.hasfocus(5110)</visible>
+						</control>
+						<control type="image">
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>9-col</width>
+							<height>36</height>
+							<texture>masks/selected.png</texture>
+							<visible>Control.hasfocus(5240)|Control.hasfocus(5110)</visible>
+						</control>
+						<control type="label">
+							<posx>5</posx>
+							<posy>1</posy>
+							<width>643</width>
+							<height>35</height>
+							<aligny>center</aligny>
+							<align>left</align>
+							<font>itemTitleSmall</font>
+							<info>ListItem.Label</info>
+						</control>
+					</focusedlayout>
+				</control>
+			</control>
+
+			<!--Window Content - Dialog Buttons-->
+			<control type="group" id="5002">
+				<posx>10-col</posx>
+				<posy>3-row</posy>
+				<control type="button" id="5210">
+					<description>Ok Button</description>
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>3-col</width>
+					<height>45</height>
+					<label>186</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>menuTitle</font>
+					<textcolor>selected</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus>masks/selected.png</texturefocus>
+					<texturenofocus>masks/black.png</texturenofocus>
+					<onup>5240</onup>
+					<onleft>5001</onleft>
+					<ondown>5220</ondown>
+				</control>
+				<control type="button" id="5220">
+					<description>Cancel Button</description>
+					<posx>0</posx>
+					<posy>50</posy>
+					<width>3-col</width>
+					<height>45</height>
+					<label>222</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>menuTitle</font>
+					<textcolor>selected</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus>masks/selected.png</texturefocus>
+					<texturenofocus>masks/black.png</texturenofocus>
+					<onup>5210</onup>
+					<onleft>5001</onleft>
+					<ondown>5230</ondown>
+				</control>
+				<control type="button" id="5230">
+					<description>Add Button</description>
+					<posx>0</posx>
+					<posy>150</posy>
+					<width>3-col</width>
+					<height>45</height>
+					<label>15019</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>menuTitle</font>
+					<textcolor>selected</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus>masks/selected.png</texturefocus>
+					<texturenofocus>masks/offblack.png</texturenofocus>
+					<onup>5220</onup>
+					<onleft>5001</onleft>
+					<ondown>5240</ondown>
+				</control>
+				<control type="button" id="5240">
+					<description>Remove Button</description>
+					<posx>0</posx>
+					<posy>200</posy>
+					<width>3-col</width>
+					<height>45</height>
+					<label>1210</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>menuTitle</font>
+					<textcolor>selected</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus>masks/selected.png</texturefocus>
+					<texturenofocus>masks/offblack.png</texturenofocus>
+					<onup>5230</onup>
+					<onleft>5001</onleft>
+					<ondown>5210</ondown>
+				</control>
+			</control>
+		</control>
+
+	</controls>
+</window>

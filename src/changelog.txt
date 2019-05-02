@@ -1,0 +1,8 @@
+v1.4
+- Restructure search methods and keep only search dialog GUI window
+- Rename it in program.rss
+- Addon icon has been changed (rebranding)
+- Redesign all addon GUI classes and related skin
+- Adapt the addon functionalities to refer service.clue libraries
+- Skin adapted for Clue
+- Inherit add-on functions from original script.rsseditor 2.0.4

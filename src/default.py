@@ -19,6 +19,12 @@ else:
 
 
 class RssEditorDialog(xbmcgui.WindowXMLDialog):
+	_TITLE = 5000
+	_URLIST = 5110
+	_ADDBTN = 5230
+	_DELBTN = 5240
+	_OKBTN  = 5210
+	_CANCEL = 5220
 
 	def __init__(self, *args, **kwargs):
 		self.setNum = 'set1'
@@ -30,29 +36,20 @@ class RssEditorDialog(xbmcgui.WindowXMLDialog):
 	def onInit(self):
 		self.setControls()
 		self.feedsList = self.parser.feedsList[self.setNum]['feedslist']
-		if not self.feedsList:
-			xbmcgui.Dialog().ok(commons.translate(32040) + 'RssFeeds.xml', 'RssFeeds.xml ' + commons.translate(32041), commons.translate(32042), commons.translate(32043))
-			self.closeDialog()
 		self.showDialog()
 
 
 	def setControls(self):
-		# ids that matters
-		self.__TITLE_LBL = 5000
-		self.__CH_LIST = 5110
-		self.__ADD_BTN = 5230
-		self.__REMOVE_BTN = 5240
-		self.__OK_BTN = 5210
-		self.__CANCEL_BTN = 5220
 		# controls used for data manipulation
-		self.ListControl = self.getControl(self.__CH_LIST)
-		self.AddButtonControl = self.getControl(self.__ADD_BTN)
-		self.RemoveButtonControl = self.getControl(self.__REMOVE_BTN)
-		self.OkButtonControl = self.getControl(self.__OK_BTN)
-		self.CancelButtonControl = self.getControl(self.__CANCEL_BTN)
+		self.ListControl = self.getControl(self._URLIST)
+		self.AddButtonControl = self.getControl(self._ADDBTN)
+		self.RemoveButtonControl = self.getControl(self._DELBTN)
+		self.OkButtonControl = self.getControl(self._OKBTN)
+		self.CancelButtonControl = self.getControl(self._CANCEL)
+
 
 	def showDialog(self):
-		self.getControl(self.__TITLE_LBL).setLabel(commons.translate(32000))
+		self.getControl(self._TITLE).setLabel(commons.translate(32000))
 		self.updateFeedsList()
 
 
@@ -62,7 +59,7 @@ class RssEditorDialog(xbmcgui.WindowXMLDialog):
 
 	def onClick(self, controlId):
 		# edit existing feed
-		if controlId == self.__CH_LIST:
+		if controlId == self._URLIST:
 			position = self.ListControl.getSelectedPosition()
 			oldUrl = self.feedsList[position]['url']
 			oldUpdateInterval = self.feedsList[position]['updateinterval']
@@ -71,31 +68,27 @@ class RssEditorDialog(xbmcgui.WindowXMLDialog):
 				self.feedsList[position] = {'url':newUrl, 'updateinterval':newUpdateInterval}
 			self.updateFeedsList()
 		#add new feed
-		elif controlId == self.__ADD_BTN:
+		elif controlId == self._ADDBTN:
 			newUrl, newUpdateInterval = self.getNewFeed()
 			if newUrl:
 				self.feedsList.append({'url':newUrl, 'updateinterval':newUpdateInterval})
 			self.updateFeedsList()
 		#remove existing feed
-		elif controlId == self.__REMOVE_BTN:
+		elif controlId == self._DELBTN:
 			self.removeFeed()
 			self.updateFeedsList()
 		#save xml
-		elif controlId == self.__OK_BTN:
+		elif controlId == self._OKBTN:
 			self.parser.writeXmlToFile()
 			self.closeDialog()
 		#cancel dialog
-		elif controlId == self.__CANCEL_BTN:
+		elif controlId == self._CANCEL:
 			self.closeDialog()
 
 
 	def onAction(self, action):
 		if action in (9, 10):
 			self.closeDialog()
-
-
-	def onFocus(self, controlId):
-		pass
 
 
 	def removeFeed(self):
@@ -121,7 +114,6 @@ class RssEditorDialog(xbmcgui.WindowXMLDialog):
 		self.ListControl.reset()
 		for feed in self.feedsList:
 			self.ListControl.addItem(feed['url'])
-		self.list_label.setLabel(commons.translate(32014) % (''))
 
 
 
@@ -129,38 +121,34 @@ class XMLParser:
 
 	def __init__(self):
 		self.RssFeedsPath = xbmc.translatePath('special://userdata/RssFeeds.xml').decode("utf-8")
-		sane = self.checkRssFeedPathSanity()
+		sane = os.path.isfile(self.RssFeedsPath) and os.path.getsize(self.RssFeedsPath)
 		if sane:
 			try:
 				self.feedsTree = parse(self.RssFeedsPath)
 			except:
-				commons.debug('Failed to parse ' + unicodedata.normalize( 'NFKD', self.RssFeedsPath ).encode( 'ascii', 'ignore' ))
-				regen = xbmcgui.Dialog().yesno(commons.translate(40), commons.translate(51), commons.translate(52), commons.translate(53))
-				if regen:
-					commons.debug('[script] RSS Editor --> Attempting to Regenerate RssFeeds.xml')
-					xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<rssfeeds>\n\
-					<!-- RSS feeds. To have multiple feeds, just add a feed to the set. You can also have multiple sets. 	!-->\n\
-					<!-- To use different sets in your skin, each must be called from skin with a unique id.			 	!-->\n\
-					<set id="1">\n	<feed updateinterval="30">http://feeds.feedburner.com/slashfilm</feed>\n  </set>\n</rssfeeds>'
-					f = open(self.RssFeedsPath, 'w')
-					f.write(xml)
-					f.close()
-					self.__init__()
-				else:
-					commons.debug('User opted to not regenerate RssFeeds.xml. Script Exiting..')
-					self.feedsTree = False
+				commons.debug('Failed to parse %s, attempting to regenerate it..' %unicodedata.normalize('NFKD', self.RssFeedsPath).encode( 'ascii', 'ignore' ))
+				self.regenerate()
+				self.__init__()
 			if self.feedsTree:
 				self.feedsList = self.getCurrentRssFeeds()
 		else:
-			self.feedsTree = False
-			self.feedsList = False
 			commons.debug('Could not open ' + unicodedata.normalize( 'NFKD', self.RssFeedsPath ).encode( 'ascii', 'ignore' ) + '. Either the file does not exist, or its size is zero.')
+			self.regenerate()
+			self.__init__()
 
 
-	def checkRssFeedPathSanity(self):
-		if os.path.isfile(self.RssFeedsPath):
-			if os.path.getsize(self.RssFeedsPath):
-				return True
+	def regenerate(self):
+		xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+		xml += '<rssfeeds>\n'
+		xml += '<!-- RSS feeds. To have multiple feeds, just add a feed to the set. You can also have multiple sets. 	!-->\n'
+		xml += '<!-- To use different sets in your skin, each must be called from skin with a unique id.			 	!-->\n'
+		xml += '\t<set id="1">\n'
+		xml += '\t\t<feed updateinterval="30">http://feeds.kodi.tv/xbmc</feed>\n'
+		xml += '\t</set>\n'
+		xml += '</rssfeeds>\n'
+		f = open(self.RssFeedsPath, 'w')
+		f.write(xml)
+		f.close()
 
 
 	def getCurrentRssFeeds(self):
@@ -169,18 +157,18 @@ class XMLParser:
 		for s in sets:
 			setName = 'set'+s.attributes["id"].value
 			feedsList[setName] = {'feedslist':list(), 'attrs':dict()}
-			#get attrs
+			# get attrs
 			for attrib in s.attributes.keys():
 				feedsList[setName]['attrs'][attrib] = s.attributes[attrib].value
-			#get feedslist
+			# get feedslist
 			feeds = s.getElementsByTagName('feed')
 			for feed in feeds:
 				feedsList[setName]['feedslist'].append({'url':feed.firstChild.toxml(), 'updateinterval':feed.attributes['updateinterval'].value})
 		return feedsList
 
 
-	def formXml(self):
-		"""Form the XML to be written to RssFeeds.xml"""
+	def writeXmlToFile(self):
+		commons.debug('Writing to %s' % (unicodedata.normalize( 'NFKD', self.RssFeedsPath ).encode( 'ascii', 'ignore' )))
 		# create the document
 		doc = Document()
 		# create root element
@@ -207,12 +195,7 @@ class XMLParser:
 				feedUrl = doc.createTextNode(feed['url'])
 				feedTag.appendChild(feedUrl)
 				setTag.appendChild(feedTag)
-		return doc.toprettyxml(indent = '  ', encoding = 'UTF-8')
-
-
-	def writeXmlToFile(self):
-		commons.debug('Writing to %s' % (unicodedata.normalize( 'NFKD', self.RssFeedsPath ).encode( 'ascii', 'ignore' )))
-		xml = self.formXml()
+		xml = doc.toprettyxml(indent = '  ', encoding = 'UTF-8')
 		# hack for standalone attribute, minidom doesn't support DOM3
 		xmlHeaderEnd = xml.find('?>')
 		xml = xml[:xmlHeaderEnd]+' standalone="yes"'+xml[xmlHeaderEnd:]
@@ -226,9 +209,7 @@ class XMLParser:
 
 
 	def refreshFeed(self):
-		"""
-		Refresh MCPi's rss feed so changes can be seen immediately
-		"""
+		"""Refresh MCPi's rss feed so changes can be seen immediately"""
 		xbmc.executebuiltin('refreshrss()')
 
 

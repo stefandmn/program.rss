@@ -27,18 +27,4 @@ msgctxt "#32014"
 msgid "Enter the paths of your RSS feeds %s"
 msgstr ""
 
-msgctxt "#32040"
-msgid "Error:"
-msgstr ""
 
-msgctxt "#32041"
-msgid "was either not found in the system,"
-msgstr ""
-
-msgctxt "#32042"
-msgid "or does not contain parsable XML."
-msgstr ""
-
-msgctxt "#32043"
-msgid "Try deleting it from your userdata folder and restarting XBMC."
-msgstr ""
